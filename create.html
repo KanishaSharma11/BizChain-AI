@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Content | BizChain AI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 5%;
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    nav h1 {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #5bc0be 0%, #6fffe9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    nav a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #5bc0be;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: #5bc0be;
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      padding: 8rem 5% 3rem;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-section h2 {
+      font-size: 3rem;
+      color: white;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #5bc0be 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5% 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Left Column - Input */
+    .input-column {
+      animation: slideInLeft 0.6s ease;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Right Column - Output */
+    .output-column {
+      animation: slideInRight 0.6s ease;
+      position: sticky;
+      top: 120px;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0b132b;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title::before {
+      content: '✨';
+      font-size: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0b132b;
+      margin-bottom: 0.75rem;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #5bc0be;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(91, 192, 190, 0.1);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%230b132b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1.25rem center;
+      padding-right: 3rem;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.875rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 1.25rem 2rem;
+      background: linear-gradient(135deg, #5bc0be 0%, #6fffe9 100%);
+      color: #0b132b;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(91, 192, 190, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .generate-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .generate-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(91, 192, 190, 0.6);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .generate-btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Templates Card */
+    .templates-card {
+      background: linear-gradient(135deg, rgba(91, 192, 190, 0.1) 0%, rgba(111, 255, 233, 0.05) 100%);
+      border: 2px solid rgba(91, 192, 190, 0.3);
+    }
+
+    .templates-card::before {
+      display: none;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .template-chip {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .template-chip:hover {
+      border-color: #5bc0be;
+      background: #5bc0be;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(91, 192, 190, 0.3);
+    }
+
+    /* Output Section */
+    .output-card {
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #999;
+      text-align: center;
+      padding: 3rem 2rem;
+      border: 2px dashed #e0e0e0;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+
+    .output-placeholder svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .output-placeholder p {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .output-placeholder small {
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    #output {
+      display: none;
+    }
+
+    #output.show {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .output-header h3 {
+      color: #0b132b;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .copy-btn {
+      padding: 0.6rem 1.5rem;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #0b132b;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: #5bc0be;
+      color: white;
+      border-color: #5bc0be;
+      transform: translateY(-2px);
+    }
+
+    .output-content {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid #e0e0e0;
+      min-height: 200px;
+      line-height: 1.8;
+      color: #333;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #c3e6cb;
+      display: none;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Refine Section */
+    .refine-section {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .refine-section.show {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .refine-section h4 {
+      font-size: 1.1rem;
+      color: #0b132b;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .refine-section textarea {
+      min-height: 80px;
+      margin-bottom: 1rem;
+    }
+
+    .refine-btn {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: #0b132b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .refine-btn:hover {
+      background: #1c2541;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11, 19, 43, 0.3);
+    }
+
+    .refine-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+
+      .output-column {
+        position: static;
+      }
+
+      .hero-section h2 {
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        gap: 1rem;
+        font-size: 0.85rem;
+      }
+
+      .hero-section {
+        padding: 6rem 5% 2rem;
+      }
+
+      .hero-section h2 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .template-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .output-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>BizChain AI</h1>
+    <ul>
+      <li><a href="home.html">Home</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li><a href="create.html" class="active">Create Content</a></li>
+
+    </ul>
+  </nav>
+
+  <section class="hero-section">
+    <h2>AI Content Studio</h2>
+    <p class="subtitle">Transform your ideas into compelling marketing content with AI</p>
+  </section>
+
+  <div class="main-container">
+    <!-- Left Column: Input -->
+    <div class="input-column">
+      <!-- Input Form Card -->
+      <div class="card">
+        <h3 class="card-title">Content Settings</h3>
+        
+        <div class="form-group">
+          <label for="description">Business or Product Description</label>
+          <textarea 
+            id="description" 
+            placeholder="Describe your business, product, or campaign. Be specific about your unique value proposition, target audience, and key features..."
+            maxlength="1000"
+          ></textarea>
+          <div class="char-count"><span id="charCount">0</span>/1000 characters</div>
+        </div>
+
+        <div class="form-group">
+          <label for="type">Content Type</label>
+          <select id="type">
+            <option value="post">Social Media Post</option>
+            <option value="tagline">Brand Tagline</option>
+            <option value="video">Video Script</option>
+            <option value="email">Email Campaign</option>
+            <option value="blog">Blog Introduction</option>
+            <option value="ad">Advertisement Copy</option>
+          </select>
+        </div>
+
+        <button class="generate-btn" onclick="generateContent()">
+          <span>✨ Generate Content with AI</span>
+        </button>
+      </div>
+
+      <!-- Quick Templates Card -->
+      <div class="card templates-card">
+        <h3 class="card-title">Quick Templates</h3>
+        <div class="template-grid">
+          <div class="template-chip" onclick="useTemplate('tech')">🚀 Tech Startup</div>
+          <div class="template-chip" onclick="useTemplate('ecommerce')">🛍️ E-commerce</div>
+          <div class="template-chip" onclick="useTemplate('restaurant')">🍽️ Restaurant</div>
+          <div class="template-chip" onclick="useTemplate('fitness')">💪 Fitness</div>
+          <div class="template-chip" onclick="useTemplate('finance')">💰 Finance</div>
+          <div class="template-chip" onclick="useTemplate('education')">📚 Education</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Output -->
+    <div class="output-column">
+      <div class="card output-card">
+        <h3 class="card-title">Generated Content</h3>
+        
+        <div class="output-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <p>Your AI-generated content will appear here</p>
+          <small>Fill in the form and click generate to get started</small>
+        </div>
+
+        <div id="output">
+          <div class="output-header">
+            <h3>Your Content</h3>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy</button>
+          </div>
+          <div class="output-content" id="outputContent"></div>
+          <div class="success-message" id="successMessage">✓ Copied to clipboard!</div>
+
+          <!-- Refine Section -->
+          <div class="refine-section" id="refineSection">
+            <h4>🔄 Want to make changes?</h4>
+            <textarea 
+              id="feedback" 
+              placeholder="E.g. Make it more concise, add humor, change tone to professional..."
+            ></textarea>
+            <button class="refine-btn" id="refineButton">Regenerate with Feedback</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Character counter
+    const textarea = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    
+    textarea.addEventListener('input', () => {
+      charCount.textContent = textarea.value.length;
+    });
+
+    // Template examples
+    const templates = {
+      tech: "A revolutionary SaaS platform that helps businesses automate their workflow using AI. We serve small to medium enterprises looking to increase productivity by 40% while reducing operational costs.",
+      ecommerce: "An online marketplace specializing in sustainable, eco-friendly fashion. We connect conscious consumers with ethical brands, offering curated collections of organic clothing and accessories.",
+      restaurant: "A farm-to-table restaurant featuring locally sourced ingredients and seasonal menus. We combine traditional cooking techniques with modern culinary innovation to create unforgettable dining experiences.",
+      fitness: "A premium fitness studio offering personalized training programs, nutrition coaching, and wellness workshops. We help professionals achieve their health goals with flexible scheduling and expert guidance.",
+      finance: "A fintech app that simplifies personal finance management through AI-powered insights. We help millennials and Gen Z users track spending, save money, and invest smartly for their future.",
+      education: "An online learning platform offering industry-relevant courses in technology, business, and creative skills. We provide hands-on projects, mentorship, and career support to help learners succeed."
+    };
+
+    function useTemplate(type) {
+      textarea.value = templates[type];
+      charCount.textContent = textarea.value.length;
+      textarea.focus();
+      textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Content generation samples
+    const contentSamples = {
+      post: [
+        "🚀 Exciting news! {description}\n\nWe're transforming the way you work, one innovation at a time. Ready to experience the future?\n\n✨ Join us today and discover what's possible.\n\n#Innovation #Business #Technology",
+        "💡 What if {description}?\n\nThat's exactly what we're building. Our mission is to empower you with tools that matter.\n\n🎯 Results you can measure\n✅ Solutions you can trust\n\n#Success #Growth #Digital",
+        "🌟 Introducing a game-changer! {description}\n\nWe believe in making the complex simple and the impossible possible.\n\nReady to get started? Link in bio! 👆\n\n#GameChanger #Innovation #Future"
+      ],
+      tagline: [
+        "Innovating Tomorrow, Today.",
+        "Where Vision Meets Innovation.",
+        "Empowering Your Success Story.",
+        "Transform. Innovate. Succeed.",
+        "The Future of {Industry}, Simplified.",
+        "Your Partner in Digital Excellence."
+      ],
+      video: [
+        "[OPENING SHOT]\nNarrator: \"Imagine a world where {description}\"\n\n[CUT TO: Product demonstration]\nNarrator: \"We made it possible.\"\n\n[SHOWCASE FEATURES]\n• Feature 1: Revolutionary approach\n• Feature 2: Seamless integration\n• Feature 3: Proven results\n\n[CLOSING]\nNarrator: \"Join thousands of satisfied customers. Start your journey today.\"\n\n[CALL TO ACTION]\nVisit our website to learn more.",
+        "[SCENE 1: Problem]\n\"Every day, businesses face challenges with {problem}.\"\n\n[SCENE 2: Solution]\n\"That's why we created {product}. {Description}\"\n\n[SCENE 3: Benefits]\n\"Experience:\n✓ Increased efficiency\n✓ Cost savings\n✓ Measurable results\"\n\n[SCENE 4: Call to Action]\n\"Ready to transform your business? Get started now.\""
+      ],
+      email: [
+        "Subject: You're Going to Love This! ✨\n\nHi there,\n\nWe're excited to introduce you to something special: {description}\n\nHere's why you'll love it:\n• Benefit 1: Save time and resources\n• Benefit 2: Achieve better results\n• Benefit 3: Join a growing community\n\nSpecial offer: Get 20% off when you sign up today!\n\n[CTA Button: Start Your Journey]\n\nBest regards,\nThe Team",
+        "Subject: Transform Your Business Today 🚀\n\nDear Valued Customer,\n\n{Description}\n\nWhat makes us different:\n✓ Industry-leading expertise\n✓ Proven track record\n✓ Exceptional customer support\n\nLimited time offer: First month free for new customers!\n\n[CTA: Claim Your Free Month]\n\nLooking forward to serving you!"
+      ],
+      blog: [
+        "# The Future is Here: {Topic}\n\nIn today's rapidly evolving landscape, {description}\n\nThis isn't just another trend—it's a fundamental shift in how we approach {industry}. Over the past year, we've seen remarkable changes, and the pace is only accelerating.\n\nIn this article, we'll explore:\n• The current state of {industry}\n• Why traditional approaches are falling short\n• How innovation is reshaping the market\n• What this means for your business\n\nLet's dive in...",
+        "# Why {Topic} Matters More Than Ever\n\nThere's a revolution happening in {industry}, and {description}\n\nThe statistics are compelling: businesses that adopt innovative solutions see an average improvement of 40% in efficiency. But beyond the numbers, there's a bigger story here.\n\nIn this comprehensive guide, we'll cover:\n1. The challenges facing modern businesses\n2. Innovative solutions that are making a difference\n3. Real-world success stories\n4. How to get started\n\nReady to learn more?"
+      ],
+      ad: [
+        "🎯 ATTENTION BUSINESS OWNERS!\n\n{Description}\n\n✨ Limited Time Offer:\n• 50% OFF for new customers\n• Free trial - No credit card required\n• 30-day money-back guarantee\n\n⚡ Don't miss out! Over 10,000 businesses trust us.\n\n👉 CLICK HERE TO START FREE TRIAL\n\n*Offer expires in 48 hours*",
+        "💼 Ready to Transform Your Business?\n\n{Description}\n\n🚀 Why Choose Us:\n✓ Industry-leading technology\n✓ Award-winning support\n✓ Trusted by Fortune 500 companies\n\n🎁 EXCLUSIVE LAUNCH OFFER:\nSign up today and get 3 months FREE!\n\n[LEARN MORE] [GET STARTED NOW]\n\n*Limited availability*"
+      ]
+    };
+
+    async function generateContent() {
+      const description = textarea.value.trim();
+      const contentType = document.getElementById('type').value;
+      const output = document.getElementById('output');
+      const placeholder = document.getElementById('placeholder');
+      const outputContent = document.getElementById('outputContent');
+      const button = document.querySelector('.generate-btn');
+      const refineSection = document.getElementById('refineSection');
+
+      if (!description) {
+        alert('Please enter a business or product description');
+        textarea.focus();
+        return;
+      }
+
+      button.disabled = true;
+      button.innerHTML = '<span>⚙️ Generating...</span>';
+      placeholder.style.display = 'none';
+      output.classList.add('show');
+      outputContent.innerHTML = '<div class="loading">Creating your content</div>';
+
+      const samples = contentSamples[contentType];
+      const randomSample = samples[Math.floor(Math.random() * samples.length)];
+
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const response = await fetch("http://localhost:5000/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description, type: contentType })
+        });
+
+        if (!response.ok) throw new Error("API returned an error");
+
+        const data = await response.json();
+        const generatedContent = data.content?.trim();
+
+        if (generatedContent) {
+          outputContent.textContent = generatedContent;
+        } else {
+          throw new Error("Empty response from API");
+        }
+
+      } catch (error) {
+        console.warn("⚠️ Using fallback content:", error.message);
+
+        let generatedContent = randomSample
+          .replace(/{description}/g, description)
+          .replace(/{Description}/g, description)
+          .replace(/{Topic}/g, extractTopic(description))
+          .replace(/{industry}/g, 'your industry')
+          .replace(/{Industry}/g, 'Your Industry')
+          .replace(/{product}/g, 'our solution')
+          .replace(/{problem}/g, 'common challenges');
+
+        outputContent.textContent = generatedContent;
+      }
+
+      refineSection.classList.add('show');
+      button.disabled = false;
+      button.innerHTML = '<span>✨ Generate Content with AI</span>';
+    }
+
+    document.getElementById("refineButton").addEventListener("click", async () => {
+      const feedback = document.getElementById("feedback").value.trim();
+      const currentContent = document.getElementById("outputContent").textContent.trim();
+      const type = document.getElementById("type").value;
+      const outputContent = document.getElementById("outputContent");
+      const refineButton = document.getElementById("refineButton");
+
+      if (!feedback) {
+        alert("Please enter your feedback before regenerating!");
+        return;
+      }
+
+      refineButton.disabled = true;
+      refineButton.innerHTML = "🔄 Refining...";
+      outputContent.innerHTML = "<div class='loading'>Refining your content</div>";
+
+      try {
+        const response = await fetch("http://localhost:5000/refine", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currentContent, feedback, type }),
+        });
+
+        if (!response.ok) throw new Error("Failed to refine content");
+
+        const data = await response.json();
+        outputContent.textContent = data.refined?.trim() || "No refined content returned.";
+      } catch (error) {
+        console.error("Refine error:", error);
+        outputContent.innerHTML = "⚠️ Something went wrong while refining. Please try again.";
+      }
+
+      refineButton.disabled = false;
+      refineButton.innerHTML = "🔄 Regenerate with Feedback";
+    });
+
+    function extractTopic(description) {
+      const words = description.split(' ');
+      return words.slice(0, 3).join(' ');
+    }
+
+    function copyToClipboard() {
+      const content = document.getElementById('outputContent').textContent;
+      const successMessage = document.getElementById('successMessage');
+      
+      navigator.clipboard.writeText(content).then(() => {
+        successMessage.classList.add('show');
+        setTimeout(() => {
+          successMessage.classList.remove('show');
+        }, 2000);
+      });
+    }
+
+    textarea.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        generateContent();
+      }
+    });
+  </script>
+</body>
+</html>
