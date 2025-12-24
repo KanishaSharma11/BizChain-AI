@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Analytics Dashboard | BizChain AI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(26, 31, 58, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem 5%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    header h1 {
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .breadcrumb {
+      text-align: center;
+      margin-top: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .breadcrumb a {
+      color: #4ade80;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .breadcrumb a:hover {
+      color: #86efac;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 5%;
+    }
+
+    .progress-container {
+      max-width: 800px;
+      margin: 0 auto 4rem;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 3rem;
+    }
+
+    .progress-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 0;
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+      width: 0%;
+      transition: width 0.5s ease;
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      flex: 1;
+    }
+
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      margin: 0 auto 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-circle {
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      border-color: #4ade80;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+      transform: scale(1.1);
+    }
+
+    .step.completed .step-circle {
+      background: #22c55e;
+      border-color: #22c55e;
+    }
+
+    .step-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .step.active .step-label {
+      color: white;
+      font-weight: 600;
+    }
+
+    section {
+      background: white;
+      border-radius: 24px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.6s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+    }
+
+    section h2 {
+      color: #1a1f3a;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    section h2::before {
+      content: '';
+      width: 6px;
+      height: 35px;
+      background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+      border-radius: 3px;
+    }
+
+    section h5 {
+      color: #666;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem;
+      background: #f0fdf4;
+      border-radius: 8px;
+      border-left: 4px solid #22c55e;
+    }
+
+    .description-section textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .description-section textarea:focus {
+      outline: none;
+      border-color: #4ade80;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.1);
+    }
+
+    .char-count {
+      text-align: right;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #666;
+    }
+
+    .example-prompts {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+
+    .example-prompts h4 {
+      color: #1a1f3a;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .prompt-chip {
+      padding: 0.6rem 1.2rem;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+
+    .prompt-chip:hover {
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      color: white;
+      border-color: transparent;
+      transform: translateY(-2px);
+    }
+
+    .upload-section {
+      text-align: center;
+    }
+
+    .upload-options {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      margin: 2rem 0;
+    }
+
+    .upload-box {
+      padding: 3rem 2rem;
+      border: 3px dashed #e0e0e0;
+      border-radius: 16px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-box:hover {
+      border-color: #4ade80;
+      background: white;
+      box-shadow: 0 10px 30px rgba(74, 222, 128, 0.15);
+    }
+
+    .upload-box.dragover {
+      border-color: #4ade80;
+      background: rgba(74, 222, 128, 0.05);
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .upload-box h3 {
+      color: #1a1f3a;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-box p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-name {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #f0fdf4;
+      border-radius: 8px;
+      color: #16a34a;
+      font-weight: 600;
+      display: none;
+    }
+
+    .or-divider {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+      padding: 1rem;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sheet-input-container {
+      position: relative;
+    }
+
+    #sheetUrl {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    #sheetUrl:focus {
+      outline: none;
+      border-color: #4ade80;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.1);
+    }
+
+    #analyzeButton {
+      margin-top: 2rem;
+      padding: 1.25rem 3rem;
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #analyzeButton:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(74, 222, 128, 0.6);
+    }
+
+    #analyzeButton:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #analyzeButton.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 1.5rem;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      transform: translateY(-50%);
+    }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #visualizationSection {
+      animation: slideInUp 0.6s ease;
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .metric-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 2px solid #e0e0e0;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      border-color: #4ade80;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(74, 222, 128, 0.15);
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #22c55e;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-label {
+      color: #666;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin: 2rem 0;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 2px solid #f0f0f0;
+    }
+
+    #insights {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+      padding: 2rem;
+      border-radius: 16px;
+      border: 2px solid rgba(74, 222, 128, 0.2);
+      margin-top: 2rem;
+    }
+
+    #insights h3 {
+      color: #1a1f3a;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .insight-item {
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #22c55e;
+      display: flex;
+      align-items: start;
+      gap: 1rem;
+    }
+
+    .insight-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    #querySection {
+      animation: slideInUp 0.6s ease;
+    }
+
+    .query-input-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    #userQuery {
+      flex: 1;
+      padding: 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    #userQuery:focus {
+      outline: none;
+      border-color: #4ade80;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.1);
+    }
+
+    #queryButton {
+      padding: 1.25rem 2.5rem;
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+    }
+
+    #queryButton:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(74, 222, 128, 0.6);
+    }
+
+    .suggested-queries {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .query-chip {
+      padding: 0.6rem 1.2rem;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .query-chip:hover {
+      background: #22c55e;
+      color: white;
+      border-color: transparent;
+    }
+
+    footer {
+      background: rgba(26, 31, 58, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem 5%;
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    footer p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.5rem; }
+      section { padding: 2rem 1.5rem; }
+      .upload-options { grid-template-columns: 1fr; }
+      .or-divider { transform: rotate(90deg); }
+      .query-input-container { flex-direction: column; }
+      .progress-steps { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💰 Financial Analytics Dashboard</h1>
+    <div class="breadcrumb">
+      <a href="analytics.html">← Back to Analytics</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="progress-container">
+      <div class="progress-steps">
+        <div class="progress-line" id="progressLine"></div>
+        <div class="step active" id="step1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Entity Info</div>
+        </div>
+        <div class="step" id="step2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Upload Data</div>
+        </div>
+        <div class="step" id="step3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Insights</div>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Custom Reports</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="description-section" id="section1">
+      <h2>Entity Information</h2>
+      <textarea id="companyDescription" placeholder="Describe your organization, financial objectives, risk tolerance, investment portfolio, and key financial goals. Include details about your industry sector, revenue streams, capital structure, and strategic priorities..."></textarea>
+      <div class="char-count"><span id="charCount">0</span>/1000 characters</div>
+      
+      <div class="example-prompts">
+        <h4>💡 Quick Examples:</h4>
+        <div class="prompt-chips">
+          <div class="prompt-chip" data-prompt="publiccompany">Public Corporation</div>
+          <div class="prompt-chip" data-prompt="startup">Startup/SME</div>
+          <div class="prompt-chip" data-prompt="investment">Investment Fund</div>
+          <div class="prompt-chip" data-prompt="nonprofit">Non-Profit Org</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="upload-section" id="section2">
+      <h2>Upload Financial Data</h2>
+      <h5>Required columns: date, revenue, net_income, ebtida, total_assets, total_liabilities, shareholders_equity, current_assets, current_liabilities</h5>
+      <div class="upload-options">
+        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">📊</div>
+          <h3>Upload CSV File</h3>
+          <p>Drag and drop or click to browse</p>
+          <p style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">Supports .csv files up to 10MB</p>
+          <input type="file" id="fileInput" accept=".csv" />
+          <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="or-divider">OR</div>
+
+        <div class="sheet-input-container">
+          <div class="upload-icon" style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">📈</div>
+          <h3 style="text-align: center; margin-bottom: 1rem;">Google Sheets Link</h3>
+          <input type="url" id="sheetUrl" placeholder="Paste your Google Sheet public link here..." />
+          <p style="text-align: center; color: #666; font-size: 0.85rem; margin-top: 0.75rem;">Ensure your sheet is publicly accessible</p>
+        </div>
+      </div>
+      
+      <button id="analyzeButton">🚀 Analyze Financial Data</button>
+    </section>
+
+    <section id="visualizationSection" class="hidden">
+      <h2>Financial Insights & Visualizations</h2>
+      
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value" id="metricROE">--</div>
+          <div class="metric-label">Return on Equity</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metricROA">--</div>
+          <div class="metric-label">Return on Assets</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metricProfitMargin">--</div>
+          <div class="metric-label">Net Profit Margin</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metricCurrentRatio">--</div>
+          <div class="metric-label">Current Ratio</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metricDebtEquity">--</div>
+          <div class="metric-label">Debt-to-Equity</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metricEBITDA">--</div>
+          <div class="metric-label">EBITDA Margin</div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="chartCanvas"></canvas>
+      </div>
+
+      <div id="insights">
+        <h3>🤖 AI-Powered Financial Insights</h3>
+        <div id="keyInsights"></div>
+        <div id="suggestions"></div>
+      </div>
+    </section>
+
+    <section id="querySection" class="hidden">
+      <h2>Custom Financial Reports</h2>
+      
+      <div class="suggested-queries">
+        <div class="query-chip" data-query="Show profitability trends over fiscal quarters">📊 Quarterly Profitability</div>
+        <div class="query-chip" data-query="Analyze liquidity ratios by period">💧 Liquidity Analysis</div>
+        <div class="query-chip" data-query="Compare EBITDA margins year-over-year">📈 EBITDA Trends</div>
+        <div class="query-chip" data-query="Show cash flow vs working capital">💵 Cash Flow Analysis</div>
+      </div>
+
+      <div class="query-input-container">
+        <input type="text" id="userQuery" placeholder="e.g., Show me debt-to-equity ratio trends over the last 12 months..." />
+        <button id="queryButton">Generate Report</button>
+      </div>
+
+      <div id="customChartContainer" class="chart-container" style="display: none;">
+        <canvas id="customCanvas"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🔗 Financial data securely recorded on Cardano blockchain for audit trail and transparency</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+const textarea = document.getElementById('companyDescription');
+const charCount = document.getElementById('charCount');
+const analyzeButton = document.getElementById('analyzeButton');
+const fileInput = document.getElementById('fileInput');
+const uploadBox = document.getElementById('uploadBox');
+const fileName = document.getElementById('fileName');
+const sheetUrl = document.getElementById('sheetUrl');
+const keyInsights = document.getElementById('keyInsights');
+const suggestions = document.getElementById('suggestions');
+
+let mainChart = null;
+window.customChart = null;
+window.lastAnalyzedData = null;
+window.analysisSummary = null;
+
+// === Character Counter ===
+textarea.addEventListener('input', () => {
+  charCount.textContent = textarea.value.length;
+  updateAnalyzeButton();
+});
+
+// === Example Prompts ===
+const prompts = {
+  publiccompany: "We are a publicly traded technology corporation with diversified revenue streams across software licensing, cloud services, and enterprise solutions...",
+  startup: "We are a Series B fintech startup with recurring SaaS revenue and growing ARR...",
+  investment: "We manage a diversified investment portfolio with holdings across equities, fixed income...",
+  nonprofit: "We are a 501(c)(3) non-profit organization focused on sustainable operations and programmatic impact..."
+};
+
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('prompt-chip')) {
+    const type = e.target.getAttribute('data-prompt');
+    if (prompts[type]) {
+      textarea.value = prompts[type];
+      charCount.textContent = textarea.value.length;
+      updateAnalyzeButton();
+      textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  if (e.target.classList.contains('query-chip')) {
+    const query = e.target.getAttribute('data-query');
+    document.getElementById('userQuery').value = query;
+  }
+});
+
+// === File Upload ===
+fileInput.addEventListener('change', async (e) => handleFileUpload(e.target.files[0]));
+uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.classList.add('dragover'); });
+uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+uploadBox.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  uploadBox.classList.remove('dragover');
+  if (e.dataTransfer.files.length > 0) {
+    await handleFileUpload(e.dataTransfer.files[0]);
+  }
+});
+
+async function handleFileUpload(file) {
+  if (!file) return;
+  fileName.textContent = `✓ ${file.name}`;
+  fileName.style.display = 'block';
+  updateAnalyzeButton();
+
+  try {
+    const text = await file.text();
+    const rows = text.split('\n').filter(Boolean);
+    const headers = rows[0].split(',');
+    const data = rows.slice(1).map(row => {
+      const values = row.split(',');
+      const obj = {};
+      headers.forEach((h, i) => (obj[h.trim()] = values[i] ? values[i].trim() : null));
+      return obj;
+    });
+    window.lastAnalyzedData = data;
+    console.log(`📦 Cached ${data.length} rows from uploaded file`);
+  } catch (err) {
+    console.error("❌ Failed to parse CSV locally:", err);
+  }
+}
+
+sheetUrl.addEventListener('input', updateAnalyzeButton);
+
+function updateAnalyzeButton() {
+  const hasDescription = textarea.value.trim().length > 50;
+  const hasData = fileInput.files.length > 0 || sheetUrl.value.trim().length > 0;
+  analyzeButton.disabled = !(hasDescription && hasData);
+}
+
+// === MAIN ANALYSIS HANDLER ===
+analyzeButton.addEventListener('click', async () => {
+  analyzeButton.classList.add('loading');
+  analyzeButton.textContent = 'Analyzing Financial Data...';
+  analyzeButton.disabled = true;
+
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Please upload a CSV file first!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await fetch("http://127.0.0.1:5002/api/analyze", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+    console.log("✅ Analysis Result:", result);
+
+    if (result.error) {
+      alert("Error: " + result.error);
+      return;
+    }
+
+    const m = result.metrics;
+    window.analysisSummary = m;
+    window.lastAnalyzedData = result.raw_data || result.data || [];
+
+    // === Update metrics ===
+    document.getElementById('metricROE').textContent = (m["Return on Equity (%)"] || "N/A") + "%";
+    document.getElementById('metricROA').textContent = (m["Return on Assets (%)"] || "N/A") + "%";
+    document.getElementById('metricProfitMargin').textContent = (m["Net Profit Margin (%)"] || "N/A") + "%";
+    document.getElementById('metricCurrentRatio').textContent = m["Current Ratio"] || "N/A";
+    document.getElementById('metricDebtEquity').textContent = m["Debt to Equity"] || "N/A";
+    document.getElementById('metricEBITDA').textContent = (m["EBITDA Margin (%)"] || "N/A") + "%";
+
+    createRevenueChart(result.chart);
+
+    document.getElementById('visualizationSection').classList.remove('hidden');
+    document.getElementById('querySection').classList.remove('hidden');
+    document.getElementById('insights').scrollIntoView({ behavior: 'smooth' });
+
+    // === AI Insights ===
+    keyInsights.innerHTML = "<p>🤖 Generating AI insights...</p>";
+    suggestions.innerHTML = "";
+
+    const desc = textarea.value.trim();
+    const insightsRes = await fetch("http://127.0.0.1:5002/api/ai_insights", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        companyDescription: desc,
+        analysis: m
+      })
+    });
+
+    const insights = await insightsRes.json();
+    console.log("💡 AI Insights:", insights);
+
+    if (insights.error) {
+      keyInsights.innerHTML = `<p style='color:red;'>AI Error: ${insights.error}</p>`;
+    } else {
+      const keyFindings = insights.keyFindings || insights.findings || "No key insights generated.";
+      const opportunities = insights.opportunities || "No opportunities identified.";
+      const recommendations = insights.suggestions || insights.recommendations || "No strategic recommendations available.";
+
+      function formatList(data) {
+        if (Array.isArray(data)) {
+          return `<ul>${data.map(item => `<li>${item}</li>`).join('')}</ul>`;
+        } else if (typeof data === "string") {
+          const parts = data.split(/\n|\. /).filter(p => p.trim());
+          return `<ul>${parts.slice(0, 3).map(item => `<li>${item.trim()}</li>`).join('')}</ul>`;
+        } else {
+          return `<p>No data available.</p>`;
+        }
+      }
+
+      keyInsights.innerHTML = `
+        <h4>📊 Key Findings</h4>
+        ${formatList(keyFindings)}
+        <h4>💡 Opportunities</h4>
+        ${formatList(opportunities)}
+        <h4>💡 Suggestions</h4>
+        ${formatList(recommendations)}
+      `;
+
+      suggestions.innerHTML = `
+        <h4>⚠️ Strategic Recommendations</h4>
+        ${formatList(recommendations)}
+      `;
+    }
+
+    analyzeButton.classList.remove('loading');
+    analyzeButton.textContent = '✓ Analysis Complete';
+    analyzeButton.disabled = false;
+
+  } catch (err) {
+    console.error("❌ Analysis failed:", err);
+    alert("Error analyzing dataset. Check console for details.");
+    analyzeButton.textContent = "Analyze Financial Data";
+    analyzeButton.disabled = false;
+  }
+});
+
+// === REVENUE CHART CREATOR ===
+function createRevenueChart(chartData) {
+  const ctx = document.getElementById('chartCanvas').getContext('2d');
+  if (mainChart) mainChart.destroy();
+
+  const labels = chartData.labels;
+  const values = chartData.values;
+  const isForecast = chartData.forecast_flags;
+
+  const historicalValues = values.map((v, i) => (isForecast[i] ? null : v));
+  const forecastValues = values.map((v, i) => (isForecast[i] ? v : null));
+
+  mainChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Historical Revenue ($)',
+          data: historicalValues,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: 'Forecasted Revenue ($)',
+          data: forecastValues,
+          borderColor: '#facc15',
+          backgroundColor: 'rgba(250, 204, 21, 0.25)',
+          borderDash: [6, 6],
+          tension: 0.4,
+          fill: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: {
+          display: true,
+          text: 'Revenue Trend (Historical vs Forecast)',
+          font: { size: 16, weight: 'bold' }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Period' } },
+        y: { title: { display: true, text: 'Revenue ($)' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// === CUSTOM CHART HANDLER ===
+document.getElementById('queryButton').addEventListener('click', async () => {
+  const query = document.getElementById('userQuery').value.trim();
+  if (!query) {
+    alert("Please enter a query (e.g., 'Show revenue trend' or 'Display profit trend').");
+    return;
+  }
+  await generateCustomChart(query);
+});
+
+async function generateCustomChart(query) {
+  const chartContainer = document.getElementById('customChartContainer');
+  const customChartCanvas = document.getElementById('customCanvas');
+
+  if (!chartContainer || !customChartCanvas) {
+    console.error("❌ Missing chart container or canvas in HTML.");
+    alert("Chart container not found in HTML. Please check your layout.");
+    return;
+  }
+
+  if (!window.lastAnalyzedData) {
+    alert("Please analyze your dataset first before generating a custom chart.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://127.0.0.1:5002/api/custom_chart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, data: window.lastAnalyzedData })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Server error:", errText);
+      alert("Server error: " + errText);
+      return;
+    }
+
+    const chartData = await response.json();
+    console.log("📊 Custom Chart Data:", chartData);
+
+    if (!chartData || !Array.isArray(chartData.labels) || !Array.isArray(chartData.values)) {
+      alert("Invalid chart data received.");
+      console.error("chartData invalid:", chartData);
+      return;
+    }
+
+    chartContainer.classList.remove('hidden');
+    chartContainer.style.display = 'block';
+
+    if (window.customChart) window.customChart.destroy();
+    const ctx = customChartCanvas.getContext('2d');
+
+    window.customChart = new Chart(ctx, {
+      type: chartData.type || 'line',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label: chartData.title || 'Custom Data',
+          data: chartData.values,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16,185,129,0.2)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: {
+            display: true,
+            text: chartData.title || 'Custom Chart',
+            font: { size: 16, weight: 'bold' }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Period' } },
+          y: { title: { display: true, text: 'Value' }, beginAtZero: true }
+        }
+      }
+    });
+
+    console.log("✅ Custom chart rendered successfully");
+  } catch (err) {
+    console.error("❌ Custom chart generation failed:", err);
+    alert("Failed to generate custom chart. Check console for details.");
+  }
+}
+
+updateProgress(1);
+</script>
+
+
+</body>
+</html>
