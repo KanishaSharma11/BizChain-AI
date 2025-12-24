@@ -14,7 +14,7 @@ CORS(app)
 
 FUTURE_PERIODS = 4
 load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY", "AIzaSyAcVz99F3MIfSf29ns8OK07qMVpwXRuTVg"))
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 @app.route('/')
 def home():
