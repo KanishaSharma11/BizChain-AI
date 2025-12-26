@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketing Analytics Dashboard | BizChain AI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem 5%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    header h1 {
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .breadcrumb {
+      text-align: center;
+      margin-top: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .breadcrumb a {
+      color: #5bc0be;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .breadcrumb a:hover {
+      color: #6fffe9;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 5%;
+    }
+
+    .progress-container {
+      max-width: 800px;
+      margin: 0 auto 4rem;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 3rem;
+    }
+
+    .progress-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 0;
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+      width: 0%;
+      transition: width 0.5s ease;
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      flex: 1;
+    }
+
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      margin: 0 auto 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-circle {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+      border-color: #ff6b6b;
+      box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+      transform: scale(1.1);
+    }
+
+    .step.completed .step-circle {
+      background: #5bc0be;
+      border-color: #5bc0be;
+    }
+
+    .step-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .step.active .step-label {
+      color: white;
+      font-weight: 600;
+    }
+
+    section {
+      background: white;
+      border-radius: 24px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.6s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+    }
+
+    section h2 {
+      color: #0b132b;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    section h2::before {
+      content: '';
+      width: 6px;
+      height: 35px;
+      background: linear-gradient(180deg, #ff6b6b 0%, #ff8e53 100%);
+      border-radius: 3px;
+    }
+
+    .description-section textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .description-section textarea:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+    }
+
+    .char-count {
+      text-align: right;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #666;
+    }
+
+    .example-prompts {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 142, 83, 0.05) 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 107, 107, 0.2);
+    }
+
+    .example-prompts h4 {
+      color: #0b132b;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .prompt-chip {
+      padding: 0.6rem 1.2rem;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+
+    .prompt-chip:hover {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+      color: white;
+      border-color: transparent;
+      transform: translateY(-2px);
+    }
+
+    .upload-section {
+      text-align: center;
+    }
+
+    .upload-options {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      margin: 2rem 0;
+    }
+
+    .upload-box {
+      padding: 3rem 2rem;
+      border: 3px dashed #e0e0e0;
+      border-radius: 16px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-box:hover {
+      border-color: #ff6b6b;
+      background: white;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.15);
+    }
+
+    .upload-box.dragover {
+      border-color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.05);
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .upload-box h3 {
+      color: #0b132b;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-box p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-name {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #e8f5e9;
+      border-radius: 8px;
+      color: #2e7d32;
+      font-weight: 600;
+      display: none;
+    }
+
+    .or-divider {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+      padding: 1rem;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sheet-input-container {
+      position: relative;
+    }
+
+    #sheetUrl {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    #sheetUrl:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+    }
+
+    #analyzeButton {
+      margin-top: 2rem;
+      padding: 1.25rem 3rem;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #analyzeButton:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6);
+    }
+
+    #analyzeButton:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #analyzeButton.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 1.5rem;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      transform: translateY(-50%);
+    }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #visualizationSection {
+      animation: slideInUp 0.6s ease;
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .metric-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 2px solid #e0e0e0;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      border-color: #ff6b6b;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.15);
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ff6b6b;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-label {
+      color: #666;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin: 2rem 0;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 2px solid #f0f0f0;
+    }
+
+    #insights {
+      background: linear-gradient(135deg, rgba(91, 192, 190, 0.1) 0%, rgba(111, 255, 233, 0.05) 100%);
+      padding: 2rem;
+      border-radius: 16px;
+      border: 2px solid rgba(91, 192, 190, 0.2);
+      margin-top: 2rem;
+    }
+
+    #insights h3 {
+      color: #0b132b;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .insight-item {
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #5bc0be;
+      display: flex;
+      align-items: start;
+      gap: 1rem;
+    }
+
+    .insight-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    #querySection {
+      animation: slideInUp 0.6s ease;
+    }
+
+    .query-input-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    #userQuery {
+      flex: 1;
+      padding: 1.25rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    #userQuery:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+    }
+
+    #queryButton {
+      padding: 1.25rem 2.5rem;
+      background: linear-gradient(135deg, #5bc0be 0%, #6fffe9 100%);
+      color: #0b132b;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(91, 192, 190, 0.4);
+    }
+
+    #queryButton:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(91, 192, 190, 0.6);
+    }
+
+    .suggested-queries {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .query-chip {
+      padding: 0.6rem 1.2rem;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .query-chip:hover {
+      background: #5bc0be;
+      color: white;
+      border-color: transparent;
+    }
+
+    footer {
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem 5%;
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    footer p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.5rem; }
+      section { padding: 2rem 1.5rem; }
+      .upload-options { grid-template-columns: 1fr; }
+      .or-divider { transform: rotate(90deg); }
+      .query-input-container { flex-direction: column; }
+      .progress-steps { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Marketing Analytics Dashboard</h1>
+    <div class="breadcrumb">
+      <a href="analytics.html">← Back to Analytics</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="progress-container">
+      <div class="progress-steps">
+        <div class="progress-line" id="progressLine"></div>
+        <div class="step active" id="step1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Company Info</div>
+        </div>
+        <div class="step" id="step2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Upload Data</div>
+        </div>
+        <div class="step" id="step3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Insights</div>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Custom Queries</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="description-section" id="section1">
+      <h2>Tell Us About Your Company</h2>
+      <textarea id="companyDescription" placeholder="Describe your company, products, target audience, and marketing goals. The more details you provide, the better insights we can generate..."></textarea>
+      <div class="char-count"><span id="charCount">0</span>/1000 characters</div>
+      
+      <div class="example-prompts">
+        <h4>💡 Quick Examples:</h4>
+        <div class="prompt-chips">
+          <div class="prompt-chip" data-prompt="tech">Tech Startup</div>
+          <div class="prompt-chip" data-prompt="ecommerce">E-commerce Store</div>
+          <div class="prompt-chip" data-prompt="saas">SaaS Company</div>
+          <div class="prompt-chip" data-prompt="agency">Marketing Agency</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="upload-section" id="section2">
+      <h2>Upload Your Marketing Data</h2>
+      <h5>Columns needed in the file: date, revenue, ad_spend, clicks, impressions, conversions</h5>
+      <div class="upload-options">
+        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">📁</div>
+          <h3>Upload CSV File</h3>
+          <p>Drag and drop or click to browse</p>
+          <p style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">Supports .csv files up to 10MB</p>
+          <input type="file" id="fileInput" accept=".csv" />
+          <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="or-divider">OR</div>
+
+        <div class="sheet-input-container">
+          <div class="upload-icon" style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">📊</div>
+          <h3 style="text-align: center; margin-bottom: 1rem;">Google Sheets Link</h3>
+          <input type="url" id="sheetUrl" placeholder="Paste your Google Sheet public link here..." />
+          <p style="text-align: center; color: #666; font-size: 0.85rem; margin-top: 0.75rem;">Make sure your sheet is publicly accessible</p>
+        </div>
+      </div>
+      
+      <button id="analyzeButton" >🚀 Analyze My Data</button>
+    </section>
+
+    <section id="visualizationSection" class="hidden">
+  <h2>Insights & Visualizations</h2>
+  
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-value" id="metricROI">--</div>
+      <div class="metric-label">Campaign ROI</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value" id="metricConversion">--</div>
+      <div class="metric-label">Conversion Rate</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value" id="metricCPC">--</div>
+      <div class="metric-label">Cost Per Click</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value" id="metricEngagement">--</div>
+      <div class="metric-label">Engagement Rate</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="chartCanvas"></canvas>
+  </div>
+
+  <!-- Dynamic insights will be inserted here -->
+  <div id="insights">
+    <h3>🤖 AI-Powered Insights</h3>
+    <div id="keyInsights"></div>
+    <div id="suggestions"></div>
+  </div>
+</section>
+
+
+    <section id="querySection" class="hidden">
+      <h2>Ask for Custom Graphs</h2>
+      
+      <div class="suggested-queries">
+        <div class="query-chip" data-query="Show sales vs. ad spend over time">📊 Sales vs Ad Spend</div>
+        <div class="query-chip" data-query="Compare conversion rates by channel">🔄 Conversion by Channel</div>
+        <div class="query-chip" data-query="Show engagement trends by day of week">📅 Daily Engagement</div>
+        <div class="query-chip" data-query="Analyze ROI by campaign">💰 ROI Analysis</div>
+      </div>
+
+      <div class="query-input-container">
+        <input type="text" id="userQuery" placeholder="e.g., Show me social media engagement trends by platform..." />
+        <button id="queryButton">Generate</button>
+      </div>
+
+      <div id="customChartContainer" class="chart-container" style="display: none;">
+        <canvas id="customCanvas"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🔗 Data securely recorded on Cardano blockchain for transparency and immutability</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const textarea = document.getElementById('companyDescription');
+const charCount = document.getElementById('charCount');
+const analyzeButton = document.getElementById('analyzeButton');
+const fileInput = document.getElementById('fileInput');
+const uploadBox = document.getElementById('uploadBox');
+const fileName = document.getElementById('fileName');
+const sheetUrl = document.getElementById('sheetUrl');
+
+let mainChart = null;
+let customChart = null;
+window.lastAnalyzedData = null; // ✅ global dataset memory
+
+// =============================
+// Example Prompts
+// =============================
+const prompts = {
+  tech: "We're a B2B SaaS company providing cloud-based project management solutions...",
+  ecommerce: "We run an e-commerce store selling sustainable fashion and accessories...",
+  saas: "We're a SaaS platform offering AI-powered customer service automation...",
+  agency: "We're a digital marketing agency specializing in performance marketing for D2C brands..."
+};
+
+// =============================
+// Prompt & Query Chips
+// =============================
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('prompt-chip')) {
+    const promptType = e.target.getAttribute('data-prompt');
+    if (prompts[promptType]) {
+      textarea.value = prompts[promptType];
+      charCount.textContent = textarea.value.length;
+      updateAnalyzeButton();
+      textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  if (e.target.classList.contains('query-chip')) {
+    const query = e.target.getAttribute('data-query');
+    document.getElementById('userQuery').value = query;
+  }
+});
+
+// =============================
+// File Upload
+// =============================
+fileInput.addEventListener('change', async (e) => {
+  if (e.target.files.length > 0) {
+    const file = e.target.files[0];
+    fileName.textContent = `✓ ${file.name}`;
+    fileName.style.display = 'block';
+    updateAnalyzeButton();
+    updateProgress(2);
+
+    // ✅ Parse and cache dataset locally for custom chart
+    try {
+      const text = await file.text();
+      const rows = text.split('\n').filter(Boolean);
+      const headers = rows[0].split(',');
+      const data = rows.slice(1).map(row => {
+        const values = row.split(',');
+        const obj = {};
+        headers.forEach((h, i) => (obj[h.trim()] = values[i] ? values[i].trim() : null));
+        return obj;
+      });
+      window.lastAnalyzedData = data;
+      console.log(`📦 Cached ${data.length} rows from uploaded file`);
+    } catch (err) {
+      console.error("❌ Failed to parse CSV locally:", err);
+    }
+  }
+});
+
+uploadBox.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadBox.classList.add('dragover');
+});
+uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+uploadBox.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  uploadBox.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    fileInput.files = files;
+    fileName.textContent = `✓ ${files[0].name}`;
+    fileName.style.display = 'block';
+    updateAnalyzeButton();
+    updateProgress(2);
+
+    // ✅ Parse and store dropped CSV locally
+    try {
+      const text = await files[0].text();
+      const rows = text.split('\n').filter(Boolean);
+      const headers = rows[0].split(',');
+      const data = rows.slice(1).map(row => {
+        const values = row.split(',');
+        const obj = {};
+        headers.forEach((h, i) => (obj[h.trim()] = values[i] ? values[i].trim() : null));
+        return obj;
+      });
+      window.lastAnalyzedData = data;
+      console.log(`📦 Cached ${data.length} rows from dropped file`);
+    } catch (err) {
+      console.error("❌ Failed to parse CSV locally:", err);
+    }
+  }
+});
+
+sheetUrl.addEventListener('input', () => {
+  updateAnalyzeButton();
+  if (sheetUrl.value.trim()) updateProgress(2);
+});
+
+// =============================
+// Button + Progress
+// =============================
+function updateAnalyzeButton() {
+  const hasDescription = textarea.value.trim().length > 50;
+  const hasData = fileInput.files.length > 0 || sheetUrl.value.trim().length > 0;
+  analyzeButton.disabled = !(hasDescription && hasData);
+}
+
+function updateProgress(step) {
+  const steps = document.querySelectorAll('.step');
+  const progressLine = document.getElementById('progressLine');
+  steps.forEach((s, index) => {
+    if (index < step) s.classList.add('completed');
+    else s.classList.remove('completed');
+  });
+  progressLine.style.width = `${((step - 1) / 3) * 100}%`;
+}
+
+// =============================
+// MAIN ANALYSIS HANDLER
+// =============================
+analyzeButton.addEventListener('click', async () => {
+  analyzeButton.classList.add('loading');
+  analyzeButton.textContent = 'Analyzing...';
+  analyzeButton.disabled = true;
+
+  const formData = new FormData();
+  formData.append('description', textarea.value.trim());
+  if (fileInput.files.length > 0) {
+    formData.append('file', fileInput.files[0]);
+  } else if (sheetUrl.value.trim()) {
+    formData.append('sheet_url', sheetUrl.value.trim());
+
+    // ✅ If it's a Google Sheet, fetch CSV version and cache locally
+    try {
+      const url = sheetUrl.value.trim();
+      const gid = url.includes('gid=') ? url.split('gid=')[1].split('&')[0] : '0';
+      const sid = url.split('/d/')[1].split('/')[0];
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sid}/export?format=csv&gid=${gid}`;
+      const res = await fetch(csvUrl);
+      const text = await res.text();
+      const rows = text.split('\n').filter(Boolean);
+      const headers = rows[0].split(',');
+      const data = rows.slice(1).map(row => {
+        const values = row.split(',');
+        const obj = {};
+        headers.forEach((h, i) => (obj[h.trim()] = values[i] ? values[i].trim() : null));
+        return obj;
+      });
+      window.lastAnalyzedData = data;
+      console.log(`📦 Cached ${data.length} rows from Google Sheet`);
+    } catch (err) {
+      console.warn("⚠️ Could not cache Google Sheet data:", err);
+    }
+  }
+
+  try {
+    const response = await fetch('http://127.0.0.1:5001/api/analyze', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Server error');
+
+    console.log('✅ Backend Response:', result);
+
+    // Display results
+    document.getElementById('visualizationSection').classList.remove('hidden');
+    document.getElementById('querySection').classList.remove('hidden');
+
+    clearPreviousData();
+    renderDynamicMetrics(result.metrics || {});
+    createMainChart(result.chart);
+    renderAIInsights(result.ai_insights, result.description_analysis);
+
+    analyzeButton.classList.remove('loading');
+    analyzeButton.textContent = '✓ Analysis Complete';
+    analyzeButton.disabled = false;
+
+    document.getElementById('visualizationSection')
+      .scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch (err) {
+    console.error('❌ Error:', err);
+    alert('Something went wrong while analyzing. Check backend logs.');
+    analyzeButton.classList.remove('loading');
+    analyzeButton.textContent = 'Analyze Again';
+    analyzeButton.disabled = false;
+  }
+});
+
+// =============================
+// Clear Old Visualization
+// =============================
+function clearPreviousData() {
+  const metricCards = document.querySelector('.metrics-grid');
+  metricCards.innerHTML = '';
+
+  const ctx = document.getElementById('chartCanvas').getContext('2d');
+  if (mainChart) mainChart.destroy();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  const insights = document.getElementById('insights');
+  if (insights) insights.innerHTML = '';
+}
+
+// =============================
+// Render Metrics
+// =============================
+function renderDynamicMetrics(metrics) {
+  const grid = document.querySelector('.metrics-grid');
+  grid.innerHTML = '';
+
+  Object.entries(metrics).forEach(([key, value]) => {
+    if (key === 'used_columns') return;
+    const card = document.createElement('div');
+    card.classList.add('metric-card');
+
+    const val = document.createElement('div');
+    val.classList.add('metric-value');
+    val.textContent = value !== null ? value.toLocaleString() : '--';
+
+    const label = document.createElement('div');
+    label.classList.add('metric-label');
+    label.textContent = key.replace(/_/g, ' ').toUpperCase();
+
+    card.appendChild(val);
+    card.appendChild(label);
+    grid.appendChild(card);
+  });
+}
+
+// =============================
+// Prophet Forecast Chart
+// =============================
+function createMainChart(chart) {
+  const ctx = document.getElementById('chartCanvas').getContext('2d');
+  if (mainChart) mainChart.destroy();
+
+  const labels = chart?.labels || [];
+  const values = chart?.values || [];
+  const forecast = chart?.forecast?.values || [];
+  const forecastDates = chart?.forecast?.dates || [];
+
+  mainChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [...labels, ...forecastDates],
+      datasets: [
+        {
+          label: 'Historical Data',
+          data: [...values, ...Array(forecast.length).fill(null)],
+          borderColor: '#2196f3',
+          backgroundColor: 'rgba(33,150,243,0.15)',
+          tension: 0.4,
+          borderWidth: 3,
+          fill: true
+        },
+        {
+          label: 'Forecast (Next 30 Days)',
+          data: [...Array(values.length).fill(null), ...forecast],
+          borderColor: '#ff9800',
+          backgroundColor: 'rgba(255,152,0,0.15)',
+          borderDash: [6, 6],
+          tension: 0.4,
+          borderWidth: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Date' } },
+        y: { title: { display: true, text: 'Value' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// =============================
+// AI Insights Renderer
+// =============================
+function renderAIInsights(aiInsights, descAnalysis) {
+  const insightsDiv = document.getElementById('insights');
+  insightsDiv.innerHTML = '<h3>🤖 AI-Powered Insights</h3>';
+
+  if (!aiInsights) {
+    insightsDiv.innerHTML += '<p>No AI insights available for this dataset.</p>';
+    return;
+  }
+
+  let parsed = null;
+  try {
+    parsed = JSON.parse(aiInsights.replace(/```json|```/g, '').trim());
+  } catch (e) {
+    parsed = { findings: [aiInsights], opportunities: [], alerts: [] };
+  }
+
+  const addInsight = (icon, title, items) => {
+    items?.forEach(text => {
+      const div = document.createElement('div');
+      div.classList.add('insight-item');
+      div.innerHTML = `
+        <div class="insight-icon">${icon}</div>
+        <div><strong>${title}:</strong> ${text}</div>
+      `;
+      insightsDiv.appendChild(div);
+    });
+  };
+
+  addInsight('💡', 'Key Finding', parsed.findings);
+  addInsight('🚀', 'Opportunity', parsed.opportunities);
+  addInsight('⚠️', 'Alert', parsed.alerts);
+
+  if (descAnalysis?.intent) {
+    insightsDiv.innerHTML += `
+      <div class="insight-item">
+        <div class="insight-icon">🎯</div>
+        <div><strong>Business Intent:</strong> ${descAnalysis.intent}</div>
+      </div>`;
+  }
+}
+
+// =============================
+// Handle Custom Query Chart
+// =============================
+document.getElementById('queryButton').addEventListener('click', () => {
+  const query = document.getElementById('userQuery').value.trim();
+  if (!query) return alert("Please enter a query first!");
+  document.getElementById('customChartContainer').style.display = 'block';
+  setTimeout(() => {
+    createCustomChart(query);
+    document.getElementById('customChartContainer').scrollIntoView({ behavior: 'smooth' });
+  }, 500);
+});
+
+async function createCustomChart(query) {
+  const ctx = document.getElementById('customCanvas').getContext('2d');
+  if (customChart) customChart.destroy();
+
+  if (!window.lastAnalyzedData || !Array.isArray(window.lastAnalyzedData)) {
+    alert("Please analyze your dataset first!");
+    return;
+  }
+
+  try {
+    console.log("📤 Sending to /api/custom_chart:", {
+      query,
+      rows_sent: window.lastAnalyzedData.length
+    });
+
+    const response = await fetch('http://127.0.0.1:5001/api/custom_chart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query,
+        data: window.lastAnalyzedData
+      })
+    });
+
+    const result = await response.json();
+    console.log("📥 Custom Chart Response:", result);
+
+    if (!response.ok) throw new Error(result.error);
+
+    const { labels, values, type } = result;
+
+    if (!labels?.length || !values?.length) {
+      alert("No valid data to display in chart!");
+      return;
+    }
+
+    customChart = new Chart(ctx, {
+      type: type || 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: query,
+          data: values,
+          backgroundColor: 'rgba(54,162,235,0.7)',
+          borderColor: '#2196f3',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: query }
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error('❌ Custom Chart Error:', err);
+    alert('Could not generate chart. Try a simpler query.');
+  }
+}
+
+updateProgress(1);
+</script>
+
+
+
+
+</body>
+</html>
