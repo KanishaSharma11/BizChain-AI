@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizChain AI - Sentiment Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 5%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(135deg, #5bc0be 0%, #6fffe9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+        }
+
+        .search-section h2 {
+            color: #0b132b;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .search-section h2::before {
+            content: '';
+            width: 6px;
+            height: 35px;
+            background: linear-gradient(180deg, #5bc0be 0%, #6fffe9 100%);
+            border-radius: 3px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            padding: 0.75rem;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border-left: 4px solid #5bc0be;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #5bc0be;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(91, 192, 190, 0.1);
+        }
+
+        .btn {
+            padding: 1.25rem 3rem;
+            background: linear-gradient(135deg, #5bc0be 0%, #6fffe9 100%);
+            color: #0b132b;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(91, 192, 190, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(91, 192, 190, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sources-label {
+            color: #0b132b;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .source-tag {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .source-tag:hover {
+            border-color: #5bc0be;
+            background: #f0fdf4;
+            transform: translateY(-2px);
+        }
+
+        .source-tag.active {
+            background: linear-gradient(135deg, #5bc0be 0%, #6fffe9 100%);
+            color: #0b132b;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(91, 192, 190, 0.3);
+        }
+
+        .disclaimer {
+            margin-top: 2rem;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(91, 192, 190, 0.1) 0%, rgba(111, 255, 233, 0.05) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(91, 192, 190, 0.2);
+            font-size: 0.9rem;
+            color: #0b132b;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .disclaimer strong {
+            color: #5bc0be;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(91, 192, 190, 0.2);
+            border-top: 4px solid #5bc0be;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #0b132b;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .results-header {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+        }
+
+        .results-header h2 {
+            color: #0b132b;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .results-header h2::before {
+            content: '';
+            width: 6px;
+            height: 35px;
+            background: linear-gradient(180deg, #5bc0be 0%, #6fffe9 100%);
+            border-radius: 3px;
+        }
+
+        .sentiment-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sentiment-card {
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+            transition: transform 0.3s ease;
+        }
+
+        .sentiment-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .sentiment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .sentiment-card.positive {
+            background: linear-gradient(135deg, rgba(91, 192, 190, 0.95) 0%, rgba(111, 255, 233, 0.95) 100%);
+            color: #0b132b;
+        }
+
+        .sentiment-card.positive::before {
+            background: #5bc0be;
+        }
+
+        .sentiment-card.neutral {
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.95) 0%, rgba(234, 179, 8, 0.95) 100%);
+            color: #0b132b;
+        }
+
+        .sentiment-card.neutral::before {
+            background: #ca8a04;
+        }
+
+        .sentiment-card.negative {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(220, 38, 38, 0.95) 100%);
+            color: white;
+        }
+
+        .sentiment-card.negative::before {
+            background: #b91c1c;
+        }
+
+        .sentiment-card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .sentiment-card .value {
+            font-size: 3.5em;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .sentiment-card .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .chart-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+        }
+
+        .chart-section h3 {
+            color: #0b132b;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chart-section h3::before {
+            content: '';
+            width: 5px;
+            height: 28px;
+            background: linear-gradient(180deg, #5bc0be 0%, #6fffe9 100%);
+            border-radius: 3px;
+        }
+
+        .chart-bar {
+            margin: 2rem 0;
+        }
+
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #0b132b;
+        }
+
+        .bar {
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem;
+            color: #0b132b;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-radius: 20px;
+        }
+
+        .bar-fill.positive { 
+            background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+            box-shadow: 0 2px 10px rgba(91, 192, 190, 0.3);
+        }
+        
+        .bar-fill.neutral { 
+            background: linear-gradient(90deg, #facc15 0%, #eab308 100%);
+            box-shadow: 0 2px 10px rgba(250, 204, 21, 0.3);
+        }
+        
+        .bar-fill.negative { 
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        .comments-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease;
+        }
+
+        .comments-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #5bc0be 0%, #6fffe9 100%);
+        }
+
+        .comments-section h3 {
+            color: #0b132b;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .comments-section h3::before {
+            content: '';
+            width: 5px;
+            height: 28px;
+            background: linear-gradient(180deg, #5bc0be 0%, #6fffe9 100%);
+            border-radius: 3px;
+        }
+
+        .comment {
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .comment:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment.positive {
+            background: linear-gradient(135deg, rgba(91, 192, 190, 0.1) 0%, rgba(111, 255, 233, 0.05) 100%);
+            border-color: #5bc0be;
+        }
+
+        .comment.neutral {
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.1) 0%, rgba(234, 179, 8, 0.05) 100%);
+            border-color: #eab308;
+        }
+
+        .comment.negative {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+            border-color: #dc2626;
+        }
+
+        .comment-text {
+            color: #0b132b;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .comment-source {
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            background: white;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+
+            .sentiment-overview {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .search-section h2 {
+                font-size: 1.4rem;
+            }
+        }
+
+.comments-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.comments-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.comments-section li {
+    background: #f5f5f5;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    line-height: 1.5;
+}
+</style>
+
+    
+</head>
+<body>
+    <header>
+        <h1>BizChain AI</h1>
+        <p class="tagline">Comprehensive Sentiment Analysis Platform</p>
+    </header>
+
+    <main>
+        <div class="search-section">
+            <h2>Start Your Analysis</h2>
+            <p class="subtitle">Enter any company or product name to discover what people are saying across social media, news, and review platforms</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="e.g., Apple, Tesla, iPhone, Starbucks...">
+                <button class="btn" id="analyzeBtn">🚀 Analyze Sentiment</button>
+            </div>
+            
+            <div class="sources-label">📊 Select Data Sources:</div>
+            <div class="sources">
+                <div class="source-tag" data-source="news">
+                    <span>📰 News</span>
+                </div>
+                <div class="source-tag" data-source="reddit">
+                    <span>🔴 Reddit</span>
+                </div>
+                <div class="source-tag" data-source="youtube">
+                    <span>▶ YouTube</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>🔍 Analyzing sentiment across multiple sources...</p>
+        </div>
+
+        <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>🔍 Analyzing sentiment across multiple sources...</p>
+</div>
+
+<div class="results" id="results">
+    <div class="results-header">
+        <h2>📊 Analysis Results</h2>
+        <!-- PDF Download Button Added -->
+        <button class="btn" id="downloadPdfBtn">📄 Download PDF</button>
+    </div>
+    
+    <div class="sentiment-overview">
+        <div class="sentiment-card positive">
+            <h3>Positive</h3>
+            <div class="value" id="positivePercent">0%</div>
+            <div class="label">Favorable mentions</div>
+        </div>
+        <div class="sentiment-card neutral">
+            <h3>Neutral</h3>
+            <div class="value" id="neutralPercent">0%</div>
+            <div class="label">Balanced mentions</div>
+        </div>
+        <div class="sentiment-card negative">
+            <h3>Negative</h3>
+            <div class="value" id="negativePercent">0%</div>
+            <div class="label">Critical mentions</div>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <h3>📈 Sentiment Distribution</h3>
+
+        <div class="chart-bar">
+            <div class="chart-label">
+                <span>😊 Positive</span>
+            </div>
+            <div class="bar">
+                <div class="bar-fill positive" id="positiveBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="chart-bar">
+            <div class="chart-label">
+                <span>😐 Neutral</span>
+            </div>
+            <div class="bar">
+                <div class="bar-fill neutral" id="neutralBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="chart-bar">
+            <div class="chart-label">
+                <span>😞 Negative</span>
+            </div>
+            <div class="bar">
+                <div class="bar-fill negative" id="negativeBar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 10 Comments -->
+    <div class="comments-section">
+        <h3>🗨️ Top 10 Comments</h3>
+        <ul id="commentsList"></ul>
+    </div>
+
+</div>
+</main>
+
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const loading = document.getElementById('loading');
+const results = document.getElementById('results');
+const sourceTags = document.querySelectorAll('.source-tag');
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+
+let selectedSource = 'all';
+let lastAnalysisData = null;
+
+// ---------------------------
+// SELECT SOURCE TAGS
+// ---------------------------
+sourceTags.forEach(tag => {
+    tag.addEventListener('click', () => {
+        sourceTags.forEach(t => t.classList.remove('active'));
+        tag.classList.add('active');
+        selectedSource = tag.dataset.source;
+    });
+});
+
+analyzeBtn.addEventListener('click', performAnalysis);
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performAnalysis();
+});
+
+// ---------------------------
+// DOWNLOAD PDF
+// ---------------------------
+downloadPdfBtn.addEventListener('click', async () => {
+    if (!lastAnalysisData) {
+        alert("Run analysis first!");
+        return;
+    }
+
+    try {
+        const res = await fetch("/download-pdf", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                query: lastAnalysisData.query,
+                comments: lastAnalysisData.comments,
+                summary: lastAnalysisData.summary
+            })
+        });
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "BizChainAI_Report.pdf";
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error(err);
+        alert("PDF download failed");
+    }
+});
+
+// ---------------------------
+// MAIN ANALYSIS FUNCTION
+// ---------------------------
+async function performAnalysis() {
+    const query = searchInput.value.trim();
+
+    if (!query) {
+        alert("⚠️ Please enter a company or product name");
+        return;
+    }
+
+    loading.classList.add('show');
+    results.classList.remove('show');
+    analyzeBtn.disabled = true;
+
+    window.scrollTo({ top: loading.offsetTop - 100, behavior: 'smooth' });
+
+    try {
+        const res = await fetch("/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                query,
+                sources: selectedSource === "all"
+                    ? ["twitter", "news", "youtube"]
+                    : [selectedSource],
+                video_id: null
+            })
+        });
+
+        const data = await res.json();
+        console.log("Backend returned:", data);
+
+        // ⚠ FIXED: Correct detection of no comments
+        if (!data.comments || data.comments.length === 0) {
+            alert("No comments found!");
+            loading.classList.remove('show');
+            analyzeBtn.disabled = false;
+            return;
+        }
+
+        lastAnalysisData = {
+            query,
+            summary: data.summary,
+            comments: data.comments
+        };
+
+        updateUI(data.summary);
+        showComments(data.comments);
+
+    } catch (err) {
+        console.error(err);
+        alert("Error during analysis.");
+    }
+
+    loading.classList.remove('show');
+    results.classList.add('show');
+    analyzeBtn.disabled = false;
+
+    window.scrollTo({ top: results.offsetTop - 100, behavior: 'smooth' });
+}
+
+// ---------------------------
+// UPDATE SUMMARY UI
+// ---------------------------
+function updateUI(summary) {
+    const total = summary.total;
+
+    const posP = ((summary.positive / total) * 100).toFixed(1);
+    const neuP = ((summary.neutral / total) * 100).toFixed(1);
+    const negP = ((summary.negative / total) * 100).toFixed(1);
+
+    document.getElementById('positivePercent').textContent = posP + "%";
+    document.getElementById('neutralPercent').textContent = neuP + "%";
+    document.getElementById('negativePercent').textContent = negP + "%";
+
+    setTimeout(() => {
+        document.getElementById('positiveBar').style.width = posP + "%";
+        document.getElementById('neutralBar').style.width = neuP + "%";
+        document.getElementById('negativeBar').style.width = negP + "%";
+    }, 100);
+}
+
+// ---------------------------
+// SHOW TOP 10 COMMENTS (FIXED)
+// ---------------------------
+function showComments(comments) {
+    const list = document.getElementById("commentsList");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    comments.slice(0, 10).forEach((c, index) => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <b>${index + 1}. [${c.source}] (${c.sentiment.toUpperCase()})</b><br>
+            ${c.text}
+        `;
+
+        list.appendChild(li);
+    });
+}
+</script>
+
+
+
+
+</body>
+</html>
