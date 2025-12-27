@@ -11,10 +11,7 @@
 - [Technology Architecture](#-technology-architecture)
 - [Getting Started](#-getting-started)
 - [Use Cases](#-use-cases)
-- [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
 
 ---
 
@@ -253,66 +250,6 @@ python app.py
 
 ---
 
-## 🗺️ Roadmap
-
-### **Q1 2025**
-- [ ] Interactive dashboard with real-time visualizations
-- [ ] Advanced data export and reporting features
-- [ ] Mobile-responsive interface improvements
-
-### **Q2 2025**
-- [ ] Multi-language sentiment analysis support
-- [ ] Industry-specific prediction models (SaaS, E-commerce, B2B)
-- [ ] Integration with popular business tools (Slack, HubSpot, Salesforce)
-
-### **Q3 2025**
-- [ ] User authentication and team collaboration features
-- [ ] Saved reports and automated insights delivery
-- [ ] Custom model training for enterprise clients
-
-### **Q4 2025**
-- [ ] AI-powered recommendation engine
-- [ ] Competitive intelligence module
-- [ ] White-label solution for agencies
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from the community! Whether you're fixing bugs, improving documentation, or proposing new features, your input is valuable.
-
-### **How to Contribute**
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### **Code of Conduct**
-
-Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👥 Contact
-
-**Kanisha Sharma**  
-*AI/ML Engineer | Builder | Hackathon Enthusiast*
-
-- 📧 Email: your.email@example.com
-- 💼 LinkedIn: [linkedin.com/in/kanishasharma](https://linkedin.com)
-- 🐦 Twitter: [@kanishasharma](https://twitter.com)
-- 🌐 Portfolio: [kanishasharma.dev](https://yourportfolio.com)
-
----
-
 ## ⭐ Support
 
 If BizChain AI adds value to your business or project, please consider:
@@ -324,12 +261,3 @@ If BizChain AI adds value to your business or project, please consider:
 
 ---
 
-<div align="center">
-
-### **Built with ❤️ by innovators, for innovators**
-
-*Transforming business intelligence, one insight at a time.*
-
-[Get Started](#-getting-started) • [Documentation](#) • [Demo](#) • [Support](#-contact)
-
-</div>
