@@ -3,7 +3,7 @@
 from googleapiclient.discovery import build
 from .helpers import clean_text, is_english
 
-API_KEY = "YouTube API"
+API_KEY = "YouTube_API"
 
 # Words indicating Indian creators (skip these)
 INDIAN_KEYWORDS = [
@@ -118,4 +118,5 @@ def scrape_youtube(query, limit=50):
     except Exception as e:
         print("YouTube Scraper Error:", e)
         return []
+
 
