@@ -1,0 +1,14 @@
+Flask
+flask-cors
+pandas
+numpy
+scikit-learn
+matplotlib
+prophet
+statsmodels
+torch
+transformers
+joblib
+python-dotenv
+reportlab
+google-generativeai
