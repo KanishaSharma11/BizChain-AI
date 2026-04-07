@@ -11,7 +11,6 @@
 - [Technology Architecture](#-technology-architecture)
 - [Getting Started](#-getting-started)
 - [Use Cases](#-use-cases)
-- [Contributing](#-contributing)
 
 ---
 
